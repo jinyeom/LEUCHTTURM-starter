@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+from shutil import rmtree
 from copy import deepcopy
 from typing import Sequence
 
@@ -41,7 +42,7 @@ class Leuchtturm(object):
         
     def _generate_readme(self) -> None:
         r"""Generate a new `README.md` file from the list of contents"""
-        raise NotImplementedError
+        raise NotImplementedError("`_generate_readme` not implemented yet")
 
     def _generate_nb(self, nb_dir: str) -> None:
         r"""Generate a new Jupyter notebook"""
@@ -55,7 +56,6 @@ class Leuchtturm(object):
 
     def create(self, nb_name: str) -> None:
         cwd = os.getcwd() # current working directory
-        # create a new directory with the notebook name
         nb_dir = os.path.join(cwd, nb_name)
         try:
             os.mkdir(nb_dir) # may raise `FileExistsError`
@@ -63,18 +63,20 @@ class Leuchtturm(object):
         except FileExistsError:
             logger.error(f"{nb_dir} already exists")
             return
+
         # append the new notebook to the contents
         self._rc.contents.append(nb_name)
         self._rc.export(self._rc_path)
 
     def remove(self, nb_name: str):
-        # TODO: search for `nb_name` in the contents
-        #       if it exists:
-        #           prompt for assurance
-        #               if yes:
-        #                   find the directory and remove it
-        #                   remove it from the contents (overwrite contents)                 
-        raise NotImplementedError("`remove` is not implemented")
+        if nb_name in self._rc.contents:
+            resp = input(f"Remove {nb_name}? [y/n]: ")
+            if resp.lower() == "y":
+                rmtree(os.path.join(self._cwd, nb_name))
+                self._rc.contents.remove(nb_name)
+                self._rc.export(self._rc_path)
+        else:
+            logger.error(f"'{nb_name}' doesn't exist")
 
 
 if __name__ == "__main__":
