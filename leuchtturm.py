@@ -12,18 +12,21 @@ import nbformat
 
 
 RC_FILENAME = ".ltrc.json"
+LT_LOGO = """<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="292px" height="428px" version="1.1" content="&lt;mxfile userAgent=&quot;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36&quot; version=&quot;9.1.0&quot; editor=&quot;www.draw.io&quot; type=&quot;device&quot;&gt;&lt;diagram id=&quot;c8f287dc-f202-0129-1897-4a35f5549fc9&quot; name=&quot;Page-1&quot;&gt;xVVNc4IwEP013EmiFI+Var305KHnFFbIGAgTo0B/fRNI+Kg6o9M6JjNM9r3dJLtvAY9Eef0uaZl9iAS4h/2k9sibh/ECz/XTAE0HhGHQAalkSQehAdiyb7Cgb9EjS+AwcVRCcMXKKRiLooBYTTAqpaimbjvBp6eWNIUzYBtTfo5+skRlNou5P+AbYGnmTka+Zb5ovE+lOBb2PA+TXTs6OqduL+t/yGgiqhFEVh6JpBCqW+V1BNyU1pWti1tfYft7SyjULQG4CzhRfgR34/ZeqnG1aLMB4488sqwypmBb0tiwlRZfY5nKuaUPSoo9RIIL2UYTvx0946qJdKbLHeN85NoNg4tCrWnOuOmeDfATKBZTS9hmQYG2KWdpoY1YZwvSADK2/Iu2bG4gFdRX64P6qutmBpGDko12sQHYCdv8squhLXBosWzUEjPnSG0rpv3egxx6YRW5rM7sHnX8x6qzCsz8kzoP0IPgG/VAwT/oQZ6kR3guB3o189lyzMhUDrS4IMeltwPfr4Y2h+9iy43+PWT1Aw==&lt;/diagram&gt;&lt;/mxfile&gt;"><defs/><g transform="translate(0.5,0.5)"><rect x="6" y="14" width="280" height="400" rx="19.6" ry="19.6" fill="#333333" stroke="#000000" stroke-width="12" pointer-events="none"/><rect x="6" y="134" width="280" height="160" fill="#e6e6e6" stroke="#000000" stroke-width="12" pointer-events="none"/><rect x="236" y="4" width="20" height="420" fill="#1a1a1a" stroke="#000000" stroke-width="8" pointer-events="none"/></g></svg>"""
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
 class RuntimeConfig(object):
-    def __init__(self, rc: dict) -> None:
+    def __init__(self, rc):
         self.name = rc["name"]
         self.author = rc["author"]
         self.author_email = rc["author_email"]
         self.author_github_id = rc["author_github_id"]
-        self.contents = rc["contents"]
+        self.contents = sorted(rc["contents"])
 
     @classmethod
     def empty(cls):
@@ -84,8 +87,17 @@ class Leuchtturm(object):
             self._rc.author_github_id = str(author_github_id)
         self._rc.export(self._rc_path)
 
+    def nbviewer_link(self, nb_name):
+        converted = nb_name.replace(" ", "%20")
+        return (f"https://nbviewer.jupyter.org/github/{self._rc.author_github_id}/"
+                f"{self._rc.name}/blob/master/{converted}/{converted}.ipynb")
+
     def readme(self):
         r"""Generate a new `README.md` file from the list of contents"""
+        logo_path = os.path.join(self._cwd, "LEUCHTTURM.svg")
+        if not os.path.exists(logo_path):
+            with open(logo_path, "w+") as f:
+                f.write(LT_LOGO)
         readme_path = os.path.join(self._cwd, "README.md")
         if os.path.exists(readme_path):
             if input("README.md already exists. Overwrite? [y/n]: ").lower() == "n":
@@ -93,8 +105,9 @@ class Leuchtturm(object):
                 return
         # otherwise, create a new `README.md` and write
         with open(readme_path, "w+") as f:
-            contents = "\n".join([f"-[{c}](https://nbviewer.jupyter.org/github/{self._rc.author_github_id}/{self._rc.name}/blob/master/{c}/{c}.ipynb)" for c in self._rc.contents])
-            f.write(f"# {self._rc.name}\n"
+            contents = "\n".join([f"- [{c}]({self.nbviewer_link(c)})" for c in self._rc.contents])
+            f.write(f"<img src=\"LEUCHTTURM.svg\" align=right width=10%></img>\n"
+                    f"# {self._rc.name}\n"
                     f"Author: {self._rc.author} ({self._rc.author_email})\n"
                     f"\n"
                     f"## Contents\n"
