@@ -2,6 +2,6 @@ __pycache__
 *.swp
 *.pyc
 .DS_Store
-.leuchtturmrc.json
+.ltrc.json
 *.egg-info
 

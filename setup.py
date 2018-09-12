@@ -6,5 +6,5 @@ setup(name="leuchtturm",
       description="A toolkit for managing a notebook environment",
       author="Jin Yeom",
       author_email="jinyeom@utexas.edu",
-      py_modules=["leuchtturm"],
+      scripts=["leuchtturm"],
       install_requires=["fire", "nbformat"])
