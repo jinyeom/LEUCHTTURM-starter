@@ -164,7 +164,7 @@ class Leuchtturm(object):
             nb = nbformat.read(f"{new_name}.ipynb", nbformat.NO_CONVERT)
             header_source = nb.cells[0]["source"].splitlines()
             for i, line in enumerate(header_source):
-                if line.startswith("#"):
+                if line.startswith("# "):
                     header_source[i] = line.replace(nb_name, new_name)
             nb.cells[0]["source"] = "\n".join(header_source)
             nbformat.write(nb, f"{new_name}.ipynb")
