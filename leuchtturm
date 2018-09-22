@@ -108,7 +108,7 @@ class Leuchtturm(object):
                 return
         # otherwise, create a new `README.md` and write
         with open(readme_path, "w+") as f:
-            contents = "\n".join([f"- [{c}]({self.nbviewer_link(c)})" for c in self._rc.contents])
+            contents = "\n".join([f"- [{c}]({self._nbviewer_link(c)})" for c in self._rc.contents])
             f.write(f"<img src=\"LEUCHTTURM.svg\" align=right width=10%></img>\n"
                     f"# {self._rc.name}\n"
                     f"Author: {self._rc.author} ({self._rc.author_email})\n"
