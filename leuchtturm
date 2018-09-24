@@ -131,7 +131,7 @@ class Leuchtturm(object):
     def _num_cells(self, nb_path):
         r"""Get the number of cells in the notebook"""
         nb = nbformat.read(nb_path, nbformat.NO_CONVERT)
-        return math.log(len(nb.cells), 2)
+        return int(math.log(len(nb.cells), 2))
 
     def create(self, nb_name):
         nb_dir = os.path.join(self._cwd, nb_name)
