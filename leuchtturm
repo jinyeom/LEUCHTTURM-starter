@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import math
 import logging
 import json
 from shutil import rmtree
@@ -108,13 +109,29 @@ class Leuchtturm(object):
                 return
         # otherwise, create a new `README.md` and write
         with open(readme_path, "w+") as f:
-            contents = "\n".join([f"- [{c}]({self._nbviewer_link(c)})" for c in self._rc.contents])
+            #contents = "\n".join([f"- [{c}]({self._nbviewer_link(c)})" for c in self._rc.contents])
+            contents = self._readme_contents()
             f.write(f"<img src=\"LEUCHTTURM.svg\" align=right width=10%></img>\n"
                     f"# {self._rc.name}\n"
                     f"Author: {self._rc.author} ({self._rc.author_email})\n"
                     f"\n"
                     f"## Contents\n"
                     f"{contents}")
+    
+    def _readme_contents(self):
+        lines = []
+        for nb_name in self._rc.contents:
+            link = self._nbviewer_link(nb_name)
+            nb_path = f"{nb_name}/{nb_name}.ipynb"
+            cells = "".join([":memo:" for _ in range(self._num_cells(nb_path))])
+            line = f"- [{nb_name}]({link}) {cells}"
+            lines.append(line)
+        return "\n".join(lines)
+
+    def _num_cells(self, nb_path):
+        r"""Get the number of cells in the notebook"""
+        nb = nbformat.read(nb_path, nbformat.NO_CONVERT)
+        return math.log(len(nb.cells), 2)
 
     def create(self, nb_name):
         nb_dir = os.path.join(self._cwd, nb_name)
