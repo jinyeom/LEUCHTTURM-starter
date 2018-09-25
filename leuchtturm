@@ -116,6 +116,8 @@ class Leuchtturm(object):
                     f"Author: {self._rc.author} ({self._rc.author_email})\n"
                     f"\n"
                     f"## Contents\n"
+                    f"Notebook | Number of cells (log2)"
+                    f"-------- | ----------------------"
                     f"{contents}")
     
     def _readme_contents(self):
@@ -124,7 +126,7 @@ class Leuchtturm(object):
             link = self._nbviewer_link(nb_name)
             nb_path = f"{nb_name}/{nb_name}.ipynb"
             cells = "".join([":memo:" for _ in range(self._num_cells(nb_path))])
-            line = f"- [{nb_name}]({link}) {cells}"
+            line = f"- [{nb_name}]({link}) | {cells}"
             lines.append(line)
         return "\n".join(lines)
 
