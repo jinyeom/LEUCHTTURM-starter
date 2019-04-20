@@ -66,7 +66,7 @@ class Metis:
     r'''Generate a new Jupyter notebook'''
     title = os.path.basename(nb_dir)  # base name of the directory is always the title
     nb_path = os.path.join(nb_dir, title + '.ipynb')
-    title_cell = f"""# {title}\n**{self._rc.author}**  \n{self._rc.author_email}"""
+    title_cell = f"""# {title}\n**{self._rc.author_name}**  \n{self._rc.author_email}"""
     nb = nbformat.v4.new_notebook()
     nb['cells'] = [
       nbformat.v4.new_markdown_cell(title_cell),
